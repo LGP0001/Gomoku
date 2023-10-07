@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/test_network.dir/home/lgp/桌面/text/Gomoku/联网版/log/log.c.o CMakeFiles/test_network.dir/src/network.c.o CMakeFiles/test_network.dir/src/test_network.c.o -o test_network  -pthread -lcheck_pic -pthread -lrt -lm -lsubunit -lpthread -lm -lrt 
