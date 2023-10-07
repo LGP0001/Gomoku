@@ -1,5 +1,8 @@
 # include "common.h"
 
+void init_chessman(int type, char *tableline);
+void init_chessboard(int row, int col, char chessboard[][COL]) ;
+
 int main(int argc, const char *argv[]) 
 {
     setlocale(LC_ALL, "");
@@ -23,14 +26,7 @@ int main(int argc, const char *argv[])
     {
         clear ();                                                                                   // 清除屏幕
 
-        // 绘制棋盘
-        for (int i = 0; i < ROW; ++i)
-        {
-            for (int j = 0; j < COL; ++j)
-            {
-                mvaddch (i, j * 2, chessboard[i][j]);
-            }
-        }
+	    init_chessboard(ROW, COL, chessboard);  						    // 绘制棋盘
 
         mvwprintw(stdscr, ROW, 0, "玩家：%lc", current_player);                                     // 显示当前玩家
         
@@ -62,13 +58,8 @@ int main(int argc, const char *argv[])
                     if (check_win (chessboard, cur_x, cur_y, current_player)) 
                     {
                         clear();                                                                    // 清除屏幕
-                        for (int i = 0; i < ROW; ++i)                                               // 重新绘制棋盘（已解决第五个子显示不出来的问题）
-                        {
-                            for (int j = 0; j < COL; ++j)
-                            {
-                                mvaddch(i, j * 2, chessboard[i][j]);
-                            }
-                        }
+                        init_chessboard(ROW, COL, chessboard);                                      // 重新绘制棋盘（已解决第五个子显示不出来的问题）
+
                         game_over = true;
                         mvwprintw(stdscr, ROW, 0, "玩家：%lc 获胜", current_player);
                         break;
@@ -92,3 +83,48 @@ int main(int argc, const char *argv[])
     endwin ();
     return 0;
 }
+
+void init_chessman(int type, char *tableline) 
+{
+    if (type == WHITE)
+        printw("O");
+    else if (type == BLACK)
+        printw("x");
+    else
+        printw("%s", tableline);
+}
+
+void init_chessboard(int row, int col, char chessboard[][COL]) 
+{
+    for (int i = 0; i < row; ++i) {
+        for (int j = 0; j < col; ++j) {
+            move(i, j*2);
+
+            if (i == 0) {
+                if (j == 0)
+                    init_chessman(chessboard[i][j], "╔");
+                else if (j == 14)
+                    init_chessman(chessboard[i][j], "╗");
+                else
+                    init_chessman(chessboard[i][j], "╤");
+            }
+            else if (i == 14) {
+                if (j == 0)
+                    init_chessman(chessboard[i][j], "╚");
+                else if (j == 14)
+                    init_chessman(chessboard[i][j], "╝");
+                else
+                    init_chessman(chessboard[i][j], "╧");
+            }
+            else {
+                if (j == 0)
+                    init_chessman(chessboard[i][j], "╟");
+                else if (j == 14)
+                    init_chessman(chessboard[i][j], "╢");
+                else
+                    init_chessman(chessboard[i][j], "┼");
+            }
+        }
+    }
+}
+
