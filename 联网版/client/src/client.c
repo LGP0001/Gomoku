@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
         // 如果配置文件加载失败（可能是因为文件不存在），则执行自动配置
         printf("网络配置文件不存在. 正在创建中...\n");
 <<<<<<< HEAD
-        auto_config(true);  // 这个函数应该包含get_local_ip, get_free_port和write_config的调用
+        auto_config(client);  // 这个函数应该包含get_local_ip, get_free_port和write_config的调用
 =======
         auto_config(client);  // 这个函数应该包含get_local_ip, get_free_port和write_config的调用
 >>>>>>> 14d2211 (修改文件目录)
@@ -45,7 +45,7 @@ int main(int argc, char const *argv[])
     printf("[CLIENT] socket套接字为: %d\n", client_sockfd);
 
 <<<<<<< HEAD
-    setlocale(LC_ALL, "");
+    setlocale(LC_ALL, "zh_CN.UTF-8");
 =======
     setlocale(LC_ALL, "zh_CN.UTF-8");
 >>>>>>> 14d2211 (修改文件目录)
@@ -56,7 +56,7 @@ int main(int argc, char const *argv[])
     curs_set (1);                                                                                   // 设置光标可见
 
 <<<<<<< HEAD
-    char chessboard[ROW][COL] = { 0 };                                                              // 初始化棋盘
+    wchar_t chessboard[ROW][COL] = { 0 };                                                              // 初始化棋盘
 =======
     wchar_t chessboard[ROW][COL] = { 0 };                                                              // 初始化棋盘
 >>>>>>> 14d2211 (修改文件目录)
@@ -78,9 +78,9 @@ int main(int argc, char const *argv[])
     while (1)
     {
         clear ();
-        mvwprintw (stdscr, 5, 5, "1. 注册");
-        mvwprintw (stdscr, 6, 5, "2. 登录");
-        mvwprintw (stdscr, 7, 5, "3. 退出");
+        mvwaddwstr (stdscr, 5, 5, L"1. 注册");
+        mvwaddwstr (stdscr, 6, 5, L"2. 登录");
+        mvwaddwstr (stdscr, 7, 5, L"3. 退出");
 =======
     while (1)
     {
@@ -90,6 +90,7 @@ int main(int argc, char const *argv[])
         mvwaddwstr (stdscr, 7, 5, L"3. 退出");
         mvwaddwstr (stdscr, 8, 5, L"请输入你的选择： ");
 >>>>>>> 14d2211 (修改文件目录)
+        mvwaddwstr (stdscr, 8, 5, L"请输入你的选择： ");
         wrefresh(stdscr);
 
         int choice = wgetch(stdscr);
@@ -124,17 +125,17 @@ int main(int argc, char const *argv[])
                 bool is_admin;
 
 >>>>>>> 14d2211 (修改文件目录)
+                bool is_admin;
+
                 mvwprintw (stdscr, 9, 5, "请输入用户名：");
                 getstr (username);
                 mvwprintw (stdscr, 10, 5, "请输入密码：");
                 getstr(password);
 
 <<<<<<< HEAD
-                bool login_successful = perform_login(client_sockfd, username, password);
+                bool login_successful = perform_login(client_sockfd, username, password, &is_admin);
                 if (login_successful) 
-                {
-                    bool is_admin = check_admin_status(client_sockfd, username);  // 需要一个函数来从服务器查询这个用户是否是管理员
-        
+                {        
 =======
                 bool login_successful = perform_login(client_sockfd, username, password, &is_admin);
                 if (login_successful) 
@@ -182,7 +183,8 @@ int main(int argc, char const *argv[])
                                     mvwprintw(stdscr, 8, 5, "返回中...");
                                     wgetch(stdscr); // 暂停，等待用户按键继续
 <<<<<<< HEAD
-                                    return;
+                                    ch = false;
+                                    break;
 =======
                                     ch = false;
                                     break;
@@ -219,13 +221,7 @@ int main(int argc, char const *argv[])
 
                                 // 绘制棋盘
 <<<<<<< HEAD
-                                for (int i = 0; i < ROW; ++i)
-                                {
-                                    for (int j = 0; j < COL; ++j)
-                                    {
-                                        mvaddch(i, j * 2, chessboard[i][j]);
-                                    }
-                                }
+                                init_chessboard(ROW, COL, chessboard); 
 =======
                                 init_chessboard(ROW, COL, chessboard); 
 >>>>>>> 14d2211 (修改文件目录)
@@ -295,15 +291,14 @@ int main(int argc, char const *argv[])
                     getch();
                 }
 <<<<<<< HEAD
+                break;
             }
-        }
-
-        
-
-
-    }
-    endwin();
-    return 0;
+            case '3':
+            {
+                mvwprintw (stdscr, 9, 5, "期待与你的下次相遇！");
+                wgetch(stdscr);
+                endwin();
+                return 0;
 =======
                 break;
             }
@@ -324,6 +319,16 @@ int main(int argc, char const *argv[])
     }
 
 >>>>>>> 14d2211 (修改文件目录)
+            }
+            default:
+            {
+                mvwprintw (stdscr, 9, 5, "输入无效");
+                wgetch(stdscr);
+                break;
+            }
+        }
+    }
+
 }
 
 bool perform_register(int sockfd, const char *username, const char *password) 
@@ -345,7 +350,7 @@ bool perform_register(int sockfd, const char *username, const char *password)
 }
 
 <<<<<<< HEAD
-bool perform_login(int sockfd, const char *username, const char *password) 
+bool perform_login(int sockfd, const char *username, const char *password, bool *is_admin) 
 =======
 bool perform_login(int sockfd, const char *username, const char *password, bool *is_admin) 
 >>>>>>> 14d2211 (修改文件目录)
@@ -362,6 +367,10 @@ bool perform_login(int sockfd, const char *username, const char *password, bool 
 
     send(sockfd, (char*)&req, sizeof(ChessRequest), 0);  // 发送登录请求
     recv(sockfd, (char*)&res, sizeof(ChessResponse), 0);  // 接收服务器响应
+
+    *is_admin = res.is_admin;
+
+    *is_admin = res.is_admin;
 
 <<<<<<< HEAD
 =======
@@ -460,3 +469,47 @@ void init_chessboard(int row, int col, wchar_t chessboard[][COL])
     }
 }
 >>>>>>> 14d2211 (修改文件目录)
+
+void init_chessman(int type, wchar_t *tableline) 
+{
+    if (type == WHITE)
+        printw("O");
+    else if (type == BLACK)
+        printw("x");
+    else
+        printw("%ls", tableline);
+}
+
+void init_chessboard(int row, int col, wchar_t chessboard[][COL]) 
+{
+    for (int i = 0; i < row; ++i) {
+        for (int j = 0; j < col; ++j) {
+            move(i, j*2);
+
+            if (i == 0) {
+                if (j == 0)
+                    init_chessman(chessboard[i][j], L"╔");
+                else if (j == 14)
+                    init_chessman(chessboard[i][j], L"╗");
+                else
+                    init_chessman(chessboard[i][j], L"╤");
+            }
+            else if (i == 14) {
+                if (j == 0)
+                    init_chessman(chessboard[i][j], L"╚");
+                else if (j == 14)
+                    init_chessman(chessboard[i][j], L"╝");
+                else
+                    init_chessman(chessboard[i][j], L"╧");
+            }
+            else {
+                if (j == 0)
+                    init_chessman(chessboard[i][j], L"╟");
+                else if (j == 14)
+                    init_chessman(chessboard[i][j], L"╢");
+                else
+                    init_chessman(chessboard[i][j], L"┼");
+            }
+        }
+    }
+}
